@@ -1,39 +1,35 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { Platform, View } from 'react-native';
+
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
+import { Slot } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
 
-import { useColorScheme } from '@/hooks/useColorScheme';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { globalStyles } from '@/styles/global-styles';
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+import * as NavigationBar from 'expo-navigation-bar';
+const isAndroid = Platform.OS === 'android';
+isAndroid && NavigationBar.setBackgroundColorAsync('black');
+
+
+
+
+// rnfe <- create layout
+const RootLayout = () => {
+  ///* fonts ----------
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <View style={globalStyles.background}>
+      {/* --- renderiza toda ruta hija del app directory app/ --- */}
+      <Slot />
+
+      {/* --- StatusBar (señan, bateria del cel) --- */}
+      <StatusBar style="light" />
+    </View>
   );
-}
+};
+
+export default RootLayout;
